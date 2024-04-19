@@ -1,4 +1,6 @@
 def pull(file, num):
+    """Достает тест из файла. Все тесты хранятся в одном файле, разделяются строкой 'Splitter\n'.
+    На вход получает путь к файлу и номер теста в базе"""
     result = []
     with open(file, 'r', encoding='utf-8') as f:
         for i in f.readlines():
