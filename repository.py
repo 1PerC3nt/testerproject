@@ -71,5 +71,3 @@ tester = Test('Math',
               ['amogus?', 'bingus?', 'the cake is a lie?'],
               [['yeah', 'nah'], [1, 2], [True, False]],
               ['yeah', 2, False])
-if __name__ == '__main__':
-    debugmode()
