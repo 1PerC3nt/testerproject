@@ -11,7 +11,15 @@ def pull(num):
     result = []
     with open(DATA_LOCATION, 'r', encoding='utf-8') as f:
         templates = json.load(f)
-        return templates[num]
+        testobj = Test(templates[num]['topic'],
+                       templates[num]['questioncount'],
+                       templates[num]['timed'],
+                       templates[num]['scoring'],
+                       templates[num]['diff'],
+                       templates[num]['questions'],
+                       templates[num]['answers'],
+                       templates[num]['correct'])
+        return testobj
 
 
 def adder_json(item: Test, testid):

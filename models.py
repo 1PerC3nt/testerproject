@@ -25,6 +25,10 @@ class Test:
                         correct=self.correct)
         return tempdict
 
+    def __str__(self):
+        return f'''Topic: {self.topic}, Count: {self.questioncount}, {self.timed}, {self.scoring},
+{self.diff}, {self.questions}, {self.answers}, {self.correct}'''
+
 
 class User:
     def __init__(self, name, userid, isadmin):
