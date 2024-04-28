@@ -24,7 +24,7 @@ class Test:
                         answers=self.answers,
                         correct=self.correct)
         resultdict = {testid: tempdict}
-        return json.dumps(resultdict)
+        return resultdict
 
 
 class User:
