@@ -7,8 +7,7 @@ DATA_LOCATION = 'teststorage.json'
 
 def pull(num):
     """Достает тест из файла. Все тесты хранятся в одном файле формата json,
-     доступ к тестам возможен по уникальному id (нереализовано)
-    """
+     доступ к тестам возможен по уникальному id (нереализовано)"""
     result = []
     with open(DATA_LOCATION, 'r', encoding='utf-8') as f:
         templates = json.load(f)
@@ -29,6 +28,8 @@ def adder_json(item: Test, testid):
 
 
 def debugmode():
+    """Простой инструмент для тестирования функций, позволяет вручную добавлять, читать или удалять тесты,
+     а также удалять и пересоздавать файл с базой, если все сломалось"""
     while True:
         print('0 to add, 1 to read, 2 to clear, 3 to create, 4 to delete, 5 to exit')
         mode = int(input())
