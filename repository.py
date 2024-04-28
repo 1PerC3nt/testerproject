@@ -4,8 +4,9 @@ DATA_LOCATION = 'teststorage.json'
 
 
 def pull(num):
-    """Достает тест из файла. Все тесты хранятся в одном файле, разделяются строкой 'Splitter\n'.
-    На вход получает путь к файлу и номер теста в базе"""
+    """Достает тест из файла. Все тесты хранятся в одном файле формата json,
+     доступ к тестам возможен по уникальному id (нереализовано)
+     НЕ РАБОТАЕТ, ПЕРЕПИСАТЬ ПОД JSON"""
     result = []
     with open(DATA_LOCATION, 'r', encoding='utf-8') as f:
         for i in f.readlines():
@@ -18,6 +19,8 @@ def pull(num):
 
 
 def adder_json(item: Test):
+    """Добавляет объект Test в файл. Должна еще генерировать айдишник для записываемого теста,
+     но я пока не разобрался, как это сделать"""
     with open(DATA_LOCATION, 'a', encoding='utf-8') as f:
         f.write(item.convert_json(len(DATA_LOCATION)))
 
