@@ -8,7 +8,7 @@ DATA_LOCATION = 'teststorage.json'
 def pull(num):
     """Достает тест из файла. Все тесты хранятся в одном файле формата json,
      доступ к тестам возможен по уникальному id (нереализовано)
-     НЕ РАБОТАЕТ, ПЕРЕПИСАТЬ ПОД JSON"""
+    """
     result = []
     with open(DATA_LOCATION, 'r', encoding='utf-8') as f:
         templates = json.load(f)
