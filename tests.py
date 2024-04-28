@@ -1,5 +1,6 @@
-from repository import adder_json, tester, pull, DATA_LOCATION
+from repository import adder_json, pull, DATA_LOCATION, Test
 import os
+
 
 def debugmode():
     """Простой инструмент для тестирования функций, позволяет вручную добавлять, читать или удалять тесты,
@@ -29,5 +30,13 @@ def debugmode():
             break
 
 
+tester = Test('Math',
+              5,
+              False,
+              'basic',
+              'easy',
+              ['amogus?', 'bingus?', 'the cake is a lie?'],
+              [['yeah', 'nah'], [1, 2], [True, False]],
+              ['yeah', 2, False])
 if __name__ == '__main__':
     debugmode()
