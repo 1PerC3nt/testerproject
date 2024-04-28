@@ -3,7 +3,6 @@ import json
 import os
 
 DATA_LOCATION = 'teststorage.json'
-testid = 0 # placeholder, should generate ids somewhere
 
 
 def pull(num):
@@ -16,11 +15,17 @@ def pull(num):
         return templates[num]
 
 
-def adder_json(item: Test):
+def adder_json(item: Test, testid):
     """Добавляет объект Test в файл. Должна еще генерировать айдишник для записываемого теста,
      но я пока не разобрался, как это сделать"""
-    with open(DATA_LOCATION, 'a', encoding='utf-8') as f:
-        json.dump(item.convert_json(testid), f)
+    with open(DATA_LOCATION, 'r', encoding='utf-8') as f:
+        try:
+            items = json.load(f)
+        except Exception:
+            items = {}
+    with open(DATA_LOCATION, 'w', encoding='utf-8') as f:
+        items[testid] = item.convert_json()
+        json.dump(items, f, indent=3)
 
 
 def debugmode():
@@ -28,10 +33,12 @@ def debugmode():
         print('0 to add, 1 to read, 2 to clear, 3 to create, 4 to delete, 5 to exit')
         mode = int(input())
         if mode == 0:
-            adder_json(tester)
+            testid = int(input('ID placeholder'))
+            adder_json(tester, testid)
         elif mode == 1:
             try:
-                temp = pull('0')
+                testid = input('ID placeholder')
+                temp = pull(testid)
                 print(temp)
             except Exception:
                 print('error')
@@ -52,8 +59,8 @@ tester = Test('Math',
               False,
               'basic',
               'easy',
-              ['a', 'b', 'c'],
-              [['a', 'b'], [1, 2], [True, False]],
-              ['a', 2, False])
+              ['amogus?', 'bingus?', 'the cake is a lie?'],
+              [['yeah', 'nah'], [1, 2], [True, False]],
+              ['yeah', 2, False])
 if __name__ == '__main__':
     debugmode()

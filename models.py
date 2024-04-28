@@ -13,7 +13,7 @@ class Test:
         self.answers = answers
         self.correct = correct
 
-    def convert_json(self, testid):
+    def convert_json(self):
         """Подготоваливает объект класса Test к добавлению в json-файл"""
         tempdict = dict(topic=self.topic,
                         questioncount=self.questioncount,
@@ -23,8 +23,7 @@ class Test:
                         questions=self.questions,
                         answers=self.answers,
                         correct=self.correct)
-        resultdict = {testid: tempdict}
-        return resultdict
+        return tempdict
 
 
 class User:

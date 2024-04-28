@@ -1,1 +1,64 @@
-{"0": {"topic": "Math", "questioncount": 5, "timed": false, "scoring": "basic", "diff": "easy", "questions": ["a", "b", "c"], "answers": [["a", "b"], [1, 2], [true, false]], "correct": ["a", 2, false]}}
+{
+   "0": {
+      "topic": "Math",
+      "questioncount": 5,
+      "timed": false,
+      "scoring": "basic",
+      "diff": "easy",
+      "questions": [
+         "amogus?",
+         "bingus?",
+         "the cake is a lie?"
+      ],
+      "answers": [
+         [
+            "yeah",
+            "nah"
+         ],
+         [
+            1,
+            2
+         ],
+         [
+            true,
+            false
+         ]
+      ],
+      "correct": [
+         "yeah",
+         2,
+         false
+      ]
+   },
+   "1": {
+      "topic": "Math",
+      "questioncount": 5,
+      "timed": false,
+      "scoring": "basic",
+      "diff": "easy",
+      "questions": [
+         "amogus?",
+         "bingus?",
+         "the cake is a lie?"
+      ],
+      "answers": [
+         [
+            "yeah",
+            "nah"
+         ],
+         [
+            1,
+            2
+         ],
+         [
+            true,
+            false
+         ]
+      ],
+      "correct": [
+         "yeah",
+         2,
+         false
+      ]
+   }
+}
