@@ -1,6 +1,5 @@
 from models import Test
 import json
-import os
 
 DATA_LOCATION = 'teststorage.json'
 
@@ -19,7 +18,10 @@ def pull(num):
                        templates[num]['questions'],
                        templates[num]['answers'],
                        templates[num]['correct'])
-        return testobj
+        if integrity_check(testobj):
+            return testobj
+        else:
+            raise ValueError # Возможно написать кастомное исключение
 
 
 def adder_json(item: Test, testid):
@@ -33,6 +35,19 @@ def adder_json(item: Test, testid):
     with open(DATA_LOCATION, 'w', encoding='utf-8') as f:
         items[testid] = item.convert_json()
         json.dump(items, f, indent=3)
+
+
+def integrity_check(item: Test):
+    """Проверяет целостность передаваемого объекта. Функция сравнивает количество вопросов с длинами соответсвующих
+     списков, а также наличие правильного ответа среди представленных"""
+    if len(item.answers) == len(item.correct) == len(item.questions) == item.questioncount:
+        pass
+    else:
+        return False
+    for i in range(len(item.answers)):
+        if item.correct[i] not in item.answers[i]:
+            return False
+    return True
 
 
 tester = Test('Math',

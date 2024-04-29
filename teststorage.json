@@ -1,7 +1,7 @@
 {
    "0": {
       "topic": "Math",
-      "questioncount": 5,
+      "questioncount": 3,
       "timed": false,
       "scoring": "basic",
       "diff": "easy",
@@ -31,15 +31,15 @@
       ]
    },
    "1": {
-      "topic": "Math",
-      "questioncount": 5,
+      "topic": "Physics",
+      "questioncount": 4,
       "timed": false,
-      "scoring": "basic",
-      "diff": "easy",
+      "scoring": "adv",
+      "diff": "medium",
       "questions": [
-         "amogus?",
-         "bingus?",
-         "the cake is a lie?"
+         "sus?",
+         "2+2?",
+         "arirals are real?"
       ],
       "answers": [
          [
@@ -48,7 +48,8 @@
          ],
          [
             1,
-            2
+            2,
+            4
          ],
          [
             true,
@@ -56,9 +57,9 @@
          ]
       ],
       "correct": [
-         "yeah",
-         2,
-         false
+         "nah",
+         4,
+         true
       ]
    }
 }

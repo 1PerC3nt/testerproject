@@ -10,14 +10,14 @@ def debugmode():
         mode = int(input())
         if mode == 0:
             testid = int(input('ID placeholder'))
-            adder_json(tester, testid)
+            adder_json(testdata1, testid)
         elif mode == 1:
             try:
                 testid = input('ID placeholder')
                 temp = pull(testid)
                 print(temp)
-            except Exception:
-                print('error')
+            except ValueError:
+                print('Integrity check not passed')
         elif mode == 2:
             with open(DATA_LOCATION, 'w', encoding='utf-8') as f:
                 f.write('')
@@ -30,13 +30,21 @@ def debugmode():
             break
 
 
-tester = Test('Math',
-              5,
-              False,
-              'basic',
-              'easy',
-              ['amogus?', 'bingus?', 'the cake is a lie?'],
-              [['yeah', 'nah'], [1, 2], [True, False]],
-              ['yeah', 2, False])
+testdata0 = Test('Math',
+                 3,
+                 False,
+                 'basic',
+                 'easy',
+                 ['amogus?', 'bingus?', 'the cake is a lie?'],
+                 [['yeah', 'nah'], [1, 2], [True, False]],
+                 ['yeah', 2, False])
+testdata1 = Test('Physics',
+                 4,
+                 False,
+                 'adv',
+                 'medium',
+                 ['sus?', '2+2?', 'arirals are real?'],
+                 [['yeah', 'nah'], [1, 2, 4], [True, False]],
+                 ['nah', 4, True])
 if __name__ == '__main__':
     debugmode()
