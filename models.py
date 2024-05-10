@@ -1,6 +1,3 @@
-import json
-
-
 class Test:
     def __init__(self, topic: str, questioncount: int, timed: bool, scoring: str, diff: str, questions: list,
                  answers: list, correct: list):

@@ -6,7 +6,7 @@ def debugmode():
     """Простой инструмент для тестирования функций, позволяет вручную добавлять, читать или удалять тесты,
      а также удалять и пересоздавать файл с базой, если все сломалось"""
     while True:
-        print('0 to add, 1 to read, 2 to clear, 3 to create, 4 to delete, 5 to exit')
+        print('0 to add, 1 to read, 2 to clear, 3 to create, 4 to delete, 5 to add test(manual), 6 to exit')
         mode = int(input())
         if mode == 0:
             testid = int(input('ID placeholder'))
@@ -27,7 +27,43 @@ def debugmode():
         elif mode == 4:
             os.remove(DATA_LOCATION)
         elif mode == 5:
+            test_adder()
+        elif mode == 6:
             break
+
+
+def test_adder():
+    """Ручной сборщик тестов, по очереди принимает от пользователя значения полей и собирает объект класса,
+     после чего добавляет его в базу. Использует примитивную валидацию получаемых данных через integrity_check.
+      Ввод ответов пока поддерживает только строки"""
+    print('Initialized test adder mode')
+    flags = {'topic': input('Insert test topic'),
+             'questioncount': int(input('Insert test question count')),
+             'timed': bool(int(input('1 if timed, 0 if not'))),
+             'scoring': input('Insert scoring system'),
+             'diff': input('Insert test difficulty'),
+             'questions': [],
+             'answers': [],
+             'correct': []}
+    for i in range(flags['questioncount']):
+        flags['questions'].append(input(f'Insert question {i + 1}'))
+        flags['answers'].append([])
+        while True:
+            print('Insert answer, 000 if no more answers')
+            answer = input()
+            if answer == '000':
+                break
+            flags['answers'][i].append(answer)
+        flags['correct'].append(input('Insert correct answer'))
+    result = Test(flags['topic'],
+                  flags['questioncount'],
+                  flags['timed'],
+                  flags['scoring'],
+                  flags['diff'],
+                  flags['questions'],
+                  flags['answers'],
+                  flags['correct'])
+    adder_json(result, input('Insert test ID (temp)'))
 
 
 tester = Test('Math',

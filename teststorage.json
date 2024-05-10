@@ -60,5 +60,30 @@
          2,
          false
       ]
+   },
+   "2": {
+      "topic": "English",
+      "questioncount": 2,
+      "timed": false,
+      "scoring": "basic",
+      "diff": "very easy",
+      "questions": [
+         "London is...?",
+         "Ryan?"
+      ],
+      "answers": [
+         [
+            "The capital of Great Britain",
+            "Ya ne ponimaiu po-angliyski"
+         ],
+         [
+            "Gosling",
+            "What?"
+         ]
+      ],
+      "correct": [
+         "The capital of Great Britain",
+         "Gosling"
+      ]
    }
 }

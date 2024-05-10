@@ -1,6 +1,5 @@
 from models import Test
 import json
-import os
 
 DATA_LOCATION = 'teststorage.json'
 
@@ -8,7 +7,6 @@ DATA_LOCATION = 'teststorage.json'
 def pull(num):
     """Достает тест из файла. Все тесты хранятся в одном файле формата json,
      доступ к тестам возможен по уникальному id (нереализовано)"""
-    result = []
     with open(DATA_LOCATION, 'r', encoding='utf-8') as f:
         templates = json.load(f)
         testobj = Test(templates[num]['topic'],
@@ -33,13 +31,3 @@ def adder_json(item: Test, testid):
     with open(DATA_LOCATION, 'w', encoding='utf-8') as f:
         items[testid] = item.convert_json()
         json.dump(items, f, indent=3)
-
-
-tester = Test('Math',
-              5,
-              False,
-              'basic',
-              'easy',
-              ['amogus?', 'bingus?', 'the cake is a lie?'],
-              [['yeah', 'nah'], [1, 2], [True, False]],
-              ['yeah', 2, False])
