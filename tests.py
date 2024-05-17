@@ -1,4 +1,5 @@
 from repository import adder_json, pull, DATA_LOCATION, Test
+from interface import test_adder
 import os
 
 
@@ -30,40 +31,6 @@ def debugmode():
             test_adder()
         elif mode == 6:
             break
-
-
-def test_adder():
-    """Ручной сборщик тестов, по очереди принимает от пользователя значения полей и собирает объект класса,
-     после чего добавляет его в базу. Использует примитивную валидацию получаемых данных через integrity_check.
-      Ввод ответов пока поддерживает только строки"""
-    print('Initialized test adder mode')
-    flags = {'topic': input('Insert test topic'),
-             'questioncount': int(input('Insert test question count')),
-             'timed': bool(int(input('1 if timed, 0 if not'))),
-             'scoring': input('Insert scoring system'),
-             'diff': input('Insert test difficulty'),
-             'questions': [],
-             'answers': [],
-             'correct': []}
-    for i in range(flags['questioncount']):
-        flags['questions'].append(input(f'Insert question {i + 1}'))
-        flags['answers'].append([])
-        while True:
-            print('Insert answer, 000 if no more answers')
-            answer = input()
-            if answer == '000':
-                break
-            flags['answers'][i].append(answer)
-        flags['correct'].append(input('Insert correct answer'))
-    result = Test(flags['topic'],
-                  flags['questioncount'],
-                  flags['timed'],
-                  flags['scoring'],
-                  flags['diff'],
-                  flags['questions'],
-                  flags['answers'],
-                  flags['correct'])
-    adder_json(result, input('Insert test ID (temp)'))
 
 
 testdata0 = Test('Math',
