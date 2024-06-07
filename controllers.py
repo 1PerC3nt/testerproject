@@ -1,4 +1,4 @@
-from repository import adder_json, integrity_check, pull
+from repository.json_repository import adder_json, integrity_check, pull
 from models import Test
 
 

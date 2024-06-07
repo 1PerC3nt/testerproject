@@ -2,7 +2,7 @@ from models import Test
 import json
 
 
-DATA_LOCATION = 'teststorage.json'
+DATA_LOCATION = '.\\storage\\teststorage.json'
 
 
 def pull(num):

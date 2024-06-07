@@ -1,4 +1,4 @@
-from repository import adder_json, pull, DATA_LOCATION, Test
+from repository.json_repository import adder_json, pull, DATA_LOCATION, Test
 from interface import test_adder
 import os
 
