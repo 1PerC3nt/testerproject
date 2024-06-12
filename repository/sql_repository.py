@@ -18,41 +18,43 @@ class SqliteRepository:
         data = cursor.fetchall()
         print(data)
 
-    def pull(self, num):
-        """Достает тест из базы. Из-за структуры БД поочередно делает несколько запросов и раскладывает
-         полученные данные по переменным, после чего формирует из них объект класса Test.
-          Очень громоздкое из-за необходимости вручную распределять данные 'по полочкам'."""
+    def pull(self, test_id):
+        """Достает один тест из базы. Использует всего один SQL-запрос и парсит полученные данные, заполняя словарь.
+         Затем формирует объект класса Test из полученных данных (билдер возможно вынести в отдельный метод
+          самого класса Test, заодно проще будет потом интегрировать модели для вопросов"""
         query = f'''
-        select * from Tests where test_id = {num};
+        select t.*, q.title, q.answer, v.body from Tests t
+        inner join main.Questions Q on t.test_id = Q.test_id
+        inner join main.Variants V on Q.question_id = V.question_id
+        where t.test_id = {test_id};
         '''
         cursor = self.connection.execute(query)
-        testdata = cursor.fetchall()
-        query = f'''
-        select * from Questions where test_id = {num};
-        '''
-        cursor = self.connection.execute(query)
-        questiondata = cursor.fetchall()
-        questions = []
-        correct = []
-        for i in questiondata:  # Разносим данные о вопросах по двум спискам для дальнейшего формирования объекта
-            questions.append(i[1])
-            correct.append(i[2])
-        variantdata = []
-        for i in range(1, len(questiondata)+1):  # Возможно ли достать все варианты ответа одним sql-запросом?
-            query = f'''
-            select body from Variants where question_id = {i}
-            '''
-            cursor = self.connection.execute(query)
-            variantdata.append(cursor.fetchall())
+        data = cursor.fetchall()
+        parsed = {
+            'test_id': data[0][0],
+            'theme': data[0][1],
+            'scoring': data[0][2],
+            'questions': [data[0][3]],
+            'answers': [[]],
+            'correct': [data[0][4]]
+        }
+        temp = 0
+        for i, j in enumerate(data):
+            if j[3] not in parsed['questions']:
+                parsed['questions'].append(j[3])
+                parsed['correct'].append(j[4])
+                parsed['answers'].append([])
+                temp += 1
+            parsed['answers'][temp].append(j[5])
         testobj = Test(
-            topic=testdata[0][1],
-            questioncount=len(questiondata),
+            topic=parsed['theme'],
+            questioncount=len(parsed['questions']),
             timed=False,  # пока всегда False
-            scoring=testdata[0][2],
+            scoring=parsed['scoring'],
             diff='Placeholder',  # пока не хранится в БД, возможно лишний параметр
-            questions=questions,
-            answers=variantdata,
-            correct=correct
+            questions=parsed['questions'],
+            answers=parsed['answers'],
+            correct=parsed['correct']
         )
         return testobj
 
