@@ -52,7 +52,7 @@ class SqliteRepository:
             timed=False,  # пока всегда False
             scoring=parsed['scoring'],
             diff='Placeholder',  # пока не хранится в БД, возможно лишний параметр
-            questions=parsed['questions'],
+            questions=parsed['questions'],  # впихнуть куда-то билдер объектов класса Question(возможно @classmethod)
             answers=parsed['answers'],
             correct=parsed['correct']
         )
