@@ -1,7 +1,7 @@
-from models import Test
+from models import Test, Question
 import sqlite3
 
-DATA_LOCATION = '..\\storage\\storage.db'
+DATA_LOCATION = './storage/storage.db'
 
 
 class SqliteRepository:
@@ -30,33 +30,24 @@ class SqliteRepository:
         '''
         cursor = self.connection.execute(query)
         data = cursor.fetchall()
-        parsed = {
-            'test_id': data[0][0],
-            'theme': data[0][1],
-            'scoring': data[0][2],
-            'questions': [data[0][3]],
-            'answers': [[]],
-            'correct': [data[0][4]]
-        }
-        temp = 0
-        for i, j in enumerate(data):
-            if j[3] not in parsed['questions']:
-                parsed['questions'].append(j[3])
-                parsed['correct'].append(j[4])
-                parsed['answers'].append([])
-                temp += 1
-            parsed['answers'][temp].append(j[5])
-        testobj = Test(
-            topic=parsed['theme'],
-            questioncount=len(parsed['questions']),
+
+        test = Test(
+            topic=data[0][1],
             timed=False,  # пока всегда False
-            scoring=parsed['scoring'],
+            scoring=data[0][2],
             diff='Placeholder',  # пока не хранится в БД, возможно лишний параметр
-            questions=parsed['questions'],  # впихнуть куда-то билдер объектов класса Question(возможно @classmethod)
-            answers=parsed['answers'],
-            correct=parsed['correct']
+            questions=[Question(data[0][3], [])],  # впихнуть куда-то билдер объектов класса Question(возможно @classmethod)
         )
-        return testobj
+        for j in data:
+            new_question = Question(j[3], [])
+
+            if new_question not in test.questions:
+                new_question.correct = j[4]
+                new_question.answers.append(j[5])
+                test.questions.append(new_question)
+            else:
+                test.questions[-1].answers.append(j[5])
+        return test
 
     def adder_sql(self, item: Test, testid):
         """Добавляет объект класса Test в БД. Скорее всего, нужна транзакция,

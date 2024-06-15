@@ -1,14 +1,11 @@
 class Test:
-    def __init__(self, topic: str, questioncount: int, timed: bool, scoring: str, diff: str, questions: list,
-                 answers: list, correct: list):
+    def __init__(self, topic: str, timed: bool, scoring: str, diff: str, questions: list):
         self.topic = topic
-        self.questioncount = questioncount
         self.timed = timed
         self.scoring = scoring
         self.diff = diff
         self.questions = questions  # Удалить последние три значения, перенести их в класс Question
-        self.answers = answers
-        self.correct = correct
+        self.questioncount = len(self.questions)
 
     def convert_json(self):
         """Подготоваливает объект класса Test к добавлению в json-файл"""
@@ -29,13 +26,16 @@ class Test:
 
 class Question:
     """Заготовка под класс, содержит текст вопроса, список вариантов ответа и номер правильного ответа"""
-    def __init__(self, body: str, answers: list, correct: int):
+    def __init__(self, body: str, answers, correct=None):
         self.body = body
         self.answers = answers
         self.correct = correct
 
     def __repr__(self):
         return f'Question: {self.body}'
+
+    def __eq__(self, other):
+        return self.body == other.body
 
 
 class Answer:
