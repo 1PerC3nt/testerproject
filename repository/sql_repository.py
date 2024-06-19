@@ -1,7 +1,8 @@
 from models import Test, Question
 import sqlite3
+from pathlib import Path
 
-DATA_LOCATION = './storage/storage.db'
+DATA_LOCATION = Path('./storage/storage.db')
 
 
 class SqliteRepository:
@@ -36,10 +37,10 @@ class SqliteRepository:
             timed=False,  # пока всегда False
             scoring=data[0][2],
             diff='Placeholder',  # пока не хранится в БД, возможно лишний параметр
-            questions=[Question(data[0][3], [])],  # впихнуть куда-то билдер объектов класса Question(возможно @classmethod)
+            questions=[Question(data[0][3])],  # впихнуть куда-то билдер объектов класса Question(возможно @classmethod)
         )
         for j in data:
-            new_question = Question(j[3], [])
+            new_question = Question(j[3])
 
             if new_question not in test.questions:
                 new_question.correct = j[4]
@@ -47,6 +48,7 @@ class SqliteRepository:
                 test.questions.append(new_question)
             else:
                 test.questions[-1].answers.append(j[5])
+        test.questioncount = len(test.questions)
         return test
 
     def adder_sql(self, item: Test, testid):
