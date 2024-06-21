@@ -1,4 +1,4 @@
-from models import Test
+from models import Test, Question
 from controllers import adder_controller, username_validation, admin_validation, show_controller
 
 
@@ -8,8 +8,7 @@ def show_test(item: Test):
     guess = []
     print(f'Starting test {item.topic}...')
     for num, i in enumerate(item.questions):
-        print(f'Question: {i}')
-        print(f'Possible answers: {item.answers[num]}')
+        print(i)
         guess.append(int(input('Choose the correct answer: ')) - 1)
     print(guess)
 
@@ -25,26 +24,23 @@ def test_adder():
              'scoring': input('Insert scoring system'),
              'diff': input('Insert test difficulty'),
              'questions': [],
-             'answers': [],
-             'correct': []}
+             }
     for i in range(flags['questioncount']):
-        flags['questions'].append(input(f'Insert question {i + 1}'))
-        flags['answers'].append([])
+        question = Question(input(f'Insert question {i + 1}'))
         while True:
             print('Insert answer, 000 if no more answers')
             answer = input()
             if answer == '000':
                 break
-            flags['answers'][i].append(answer)
-        flags['correct'].append(input('Insert correct answer'))
+            question.answers.append(answer)
+        question.correct = input('Insert correct answer')
+        flags['questions'].append(question)
     result = Test(flags['topic'],
-                  flags['questioncount'],
                   flags['timed'],
                   flags['scoring'],
                   flags['diff'],
                   flags['questions'],
-                  flags['answers'],
-                  flags['correct'])
+                  )
     return result
 
 

@@ -1,14 +1,12 @@
-from repository.json_repository import adder_json, integrity_check, pull
+from repository.sql_repository import SqliteRepository
 from models import Test
+
+repo = SqliteRepository()
 
 
 def adder_controller(item: Test):
-    """Контроллер для добавления теста в базу.
-     Проверяет целостность собранного объекта и вызывает функцию из репозитория."""
-    if integrity_check(item):
-        adder_json(item)
-    else:
-        raise ValueError
+    """Контроллер для добавления теста в базу."""
+    repo.adder_sql(item)
 
 
 def username_validation(username):
@@ -26,6 +24,5 @@ def admin_validation():
 def show_controller(testid: str):
     """Контроллер-связка, достающий запрошенный тест из репозитория и отдающий его дальше.
      Все еще требует технические айдишники тестов, возможно придется переделывать."""
-    item = pull(testid)
+    item = repo.pull(testid)
     return item
-

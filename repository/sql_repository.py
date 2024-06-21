@@ -51,9 +51,32 @@ class SqliteRepository:
         test.questioncount = len(test.questions)
         return test
 
-    def adder_sql(self, item: Test, testid):
+    def adder_sql(self, item: Test):
         """Добавляет объект класса Test в БД. Скорее всего, нужна транзакция,
          чтобы гарантировать занесение целостного теста,
           тк он хранится по разным таблицам и нужно будет сделать несколько операций.
            Она же заменит старый метод integrity_check, использовавшийся для тех же целей."""
-        pass
+        try:
+            query = '''
+            insert into Tests(theme, scoringSystem)
+            values(?, ?);
+            '''
+            self.connection.execute(query, [item.topic, item.scoring])
+            self.connection.commit()
+            for i in item.questions:
+                query = '''
+                insert into Questions(title, answer, test_id)
+                values(?, ?, ?);
+                '''
+                self.connection.execute(query, [i.body, i.correct, 'placeholder'])  # ID теста нигде не хранится, но необходимо для занесения вопросов в БД
+                self.connection.commit()
+                for j in i.answers:
+                    query = '''
+                    insert into Variants(body, question_id)
+                    values(?, ?);
+                    '''
+                    self.connection.execute(query, [j, 'placeholder'])  # Такая же проблема с ID вопроса, нигде в объекте не хранится
+                    self.connection.commit()
+        except sqlite3.Error:
+            print('Adder failed')
+            self.connection.rollback()
