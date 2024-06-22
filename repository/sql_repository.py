@@ -2,7 +2,9 @@ from models import Test, Question
 import sqlite3
 from pathlib import Path
 
-DATA_LOCATION = Path('./storage/storage.db')
+filePAth = Path(__file__)
+
+DATA_LOCATION = Path(__file__) / Path('../storage/storage.db').resolve()
 
 
 class SqliteRepository:
@@ -59,9 +61,10 @@ class SqliteRepository:
         try:
             query = '''
             insert into Tests(theme, scoringSystem)
-            values(?, ?);
+            values(?, ?) returning test_id;
             '''
-            self.connection.execute(query, [item.topic, item.scoring])
+            cursor = self.connection.execute(query, [item.topic, item.scoring])
+            test_id = cursor.fetchone()
             self.connection.commit()
             for i in item.questions:
                 query = '''
@@ -80,3 +83,4 @@ class SqliteRepository:
         except sqlite3.Error:
             print('Adder failed')
             self.connection.rollback()
+
