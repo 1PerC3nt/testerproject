@@ -2,9 +2,7 @@ from models import Test, Question
 import sqlite3
 from pathlib import Path
 
-filePAth = Path(__file__)
-
-DATA_LOCATION = Path(__file__) / Path('../storage/storage.db').resolve()
+DATA_LOCATION = Path(__file__) / Path('./storage/storage.db').resolve()
 
 
 class SqliteRepository:
@@ -53,11 +51,30 @@ class SqliteRepository:
         test.questioncount = len(test.questions)
         return test
 
-    def adder_sql(self, item: Test):
-        """Добавляет объект класса Test в БД. Скорее всего, нужна транзакция,
-         чтобы гарантировать занесение целостного теста,
-          тк он хранится по разным таблицам и нужно будет сделать несколько операций.
-           Она же заменит старый метод integrity_check, использовавшийся для тех же целей."""
+    def add_answers(self, question_id: int, answers: list):
+        """Добавляет список ответов в БД."""
+        for answer in answers:
+            query = '''
+            insert into Variants(body, question_id)
+            values(?, ?);
+            '''
+            self.connection.execute(query, [answer, question_id])
+            self.connection.commit()
+
+    def add_questions(self, test_id: int, questions: list):
+        """Добавляет список объектов класса Question в БД."""
+        for question in questions:
+            query = '''
+            insert into Questions(title, answer, test_id)
+            values(?, ?, ?) returning question_id;
+            '''
+            cursor = self.connection.execute(query, [question.body, question.correct, test_id])
+            question_id = cursor.fetchone()
+            self.connection.commit()
+            self.add_answers(question_id[0], question.answers)
+
+    def add_test(self, item: Test):
+        """Добавляет объект класса Test в БД."""
         try:
             query = '''
             insert into Tests(theme, scoringSystem)
@@ -66,21 +83,7 @@ class SqliteRepository:
             cursor = self.connection.execute(query, [item.topic, item.scoring])
             test_id = cursor.fetchone()
             self.connection.commit()
-            for i in item.questions:
-                query = '''
-                insert into Questions(title, answer, test_id)
-                values(?, ?, ?);
-                '''
-                self.connection.execute(query, [i.body, i.correct, 'placeholder'])  # ID теста нигде не хранится, но необходимо для занесения вопросов в БД
-                self.connection.commit()
-                for j in i.answers:
-                    query = '''
-                    insert into Variants(body, question_id)
-                    values(?, ?);
-                    '''
-                    self.connection.execute(query, [j, 'placeholder'])  # Такая же проблема с ID вопроса, нигде в объекте не хранится
-                    self.connection.commit()
+            self.add_questions(test_id[0], item.questions)
         except sqlite3.Error:
             print('Adder failed')
-            self.connection.rollback()
-
+            self.connection.rollback()  # Не откатывает изменения в базе при провале транзакции

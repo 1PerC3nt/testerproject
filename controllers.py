@@ -6,7 +6,7 @@ repo = SqliteRepository()
 
 def adder_controller(item: Test):
     """Контроллер для добавления теста в базу."""
-    repo.adder_sql(item)
+    repo.add_test(item)
 
 
 def username_validation(username):
