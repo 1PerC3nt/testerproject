@@ -1,16 +1,17 @@
 from models import Test, Question
-from controllers import adder_controller, username_validation, admin_validation, show_controller
+from controllers import adder_controller, username_validation, admin_validation, show_controller, score_controller
 
 
 def show_test(item: Test):
     """Примитивный консольный интерфейс для демонстрации теста. Получает уже собранный объект класса Test,
      собирает ответы от пользователя и возвращает их в виде списка"""
     guess = []
+    correct = item.get_correct()
     print(f'Starting test {item.topic}...')
-    for num, i in enumerate(item.questions):
+    for i in item.questions:
         print(i)
-        guess.append(int(input('Choose the correct answer: ')) - 1)
-    print(guess)
+        guess.append(int(input('Choose number of the correct answer: ')))
+    return guess, correct
 
 
 def test_adder():
@@ -33,7 +34,7 @@ def test_adder():
             if answer == '000':
                 break
             question.answers.append(answer)
-        question.correct = input('Insert correct answer')
+        question.correct = input('Insert correct answer number')
         flags['questions'].append(question)
     result = Test(flags['topic'],
                   flags['timed'],
@@ -48,17 +49,18 @@ def entry():
     """Точка входа, она же базовая форма логина. После получения валидного имени пользователя открывает интерфейс."""
     username = input('Test platform booted up. Please enter your username to proceed')
     if username_validation(username):
-        user_interface()
+        user_interface(username)
 
 
-def user_interface():
+def user_interface(username):
     """Пользовательский интерфейс. Возможно в перспективе разделить админку и интерфейс юзера,
      чтобы юзер админские опции вообще не видел."""
     while True:
         mode = int(input('Input 1 to choose a test, 2 to add a test(admin), 3 to exit'))
         if mode == 1:
-            testid = input('Enter test ID')  # заменить технический айдишник на более "умный" интерфейс выбора тестов
-            show_test(show_controller(testid))
+            testid = input('Enter test ID')
+            data = show_test(show_controller(testid))
+            print(f'Final score: {score_controller(testid, data[0], data[1], username)}')
         if mode == 2 and admin_validation():
             adder_controller(test_adder())
         if mode == 3:

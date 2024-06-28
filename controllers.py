@@ -1,4 +1,5 @@
 from repository.sql_repository import SqliteRepository
+from scoring_logic import calculate_points
 from models import Test
 
 repo = SqliteRepository()
@@ -21,8 +22,17 @@ def admin_validation():
     return True
 
 
-def show_controller(testid: str):
+def show_controller(test_id):
     """Контроллер-связка, достающий запрошенный тест из репозитория и отдающий его дальше.
      Все еще требует технические айдишники тестов, возможно придется переделывать."""
-    item = repo.pull(testid)
+    item = repo.pull(test_id)
     return item
+
+
+def score_controller(test_id, guess: list, correct: list, username):
+    """Контроллер, отвечающий за подсчет и занесение результатов пройденного теста.
+     Пока не поддерживает создание новых пользователей."""
+    score = calculate_points(guess, correct)
+    user = repo.get_user(username)
+    repo.add_result(score, user.userid, test_id)
+    return score

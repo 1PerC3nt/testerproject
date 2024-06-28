@@ -1,4 +1,4 @@
-from models import Test, Question
+from models import Test, Question, User
 import sqlite3
 from pathlib import Path
 
@@ -31,17 +31,15 @@ class SqliteRepository:
         '''
         cursor = self.connection.execute(query)
         data = cursor.fetchall()
-
         test = Test(
             topic=data[0][1],
             timed=False,  # пока всегда False
             scoring=data[0][2],
             diff='Placeholder',  # пока не хранится в БД, возможно лишний параметр
-            questions=[Question(data[0][3])],  # впихнуть куда-то билдер объектов класса Question(возможно @classmethod)
+            questions=[Question(data[0][3], None, data[0][4])],
         )
         for j in data:
             new_question = Question(j[3])
-
             if new_question not in test.questions:
                 new_question.correct = j[4]
                 new_question.answers.append(j[5])
@@ -50,6 +48,17 @@ class SqliteRepository:
                 test.questions[-1].answers.append(j[5])
         test.questioncount = len(test.questions)
         return test
+
+    def get_user(self, username):
+        """Получает данные о пользователе из БД."""
+        query = f'''
+        select * from Users
+        where username =?;
+        '''
+        cursor = self.connection.execute(query, (username,))
+        data = cursor.fetchall()[0]
+        user = User(data[1], data[0], bool(data[2]))
+        return user
 
     def add_answers(self, question_id: int, answers: list):
         """Добавляет список ответов в БД."""
@@ -87,3 +96,12 @@ class SqliteRepository:
         except sqlite3.Error:
             print('Adder failed')
             self.connection.rollback()  # Не откатывает изменения в базе при провале транзакции
+
+    def add_result(self, score: int, user_id, test_id):
+        """Добавляет информацию о результатах пройденного теста в БД."""
+        query = '''
+        insert into Results(test_id, user_id, score)
+        values(?, ?, ?);
+        '''
+        self.connection.execute(query, [test_id, user_id, score])
+        self.connection.commit()

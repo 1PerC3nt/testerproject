@@ -7,6 +7,12 @@ class Test:
         self.questions = questions  # Удалить последние три значения, перенести их в класс Question
         self.questioncount = 0
 
+    def get_correct(self):
+        result = []
+        for question in self.questions:
+            result.append(question.correct)
+        return result
+
     def __str__(self):
         return f'''Topic: {self.topic}, Count: {self.questioncount}, Timed: {self.timed}, Scoring: {self.scoring},
 Test diff: {self.diff}, Questions: {self.questions}'''
@@ -42,3 +48,6 @@ class User:
         self.name = name
         self.userid = userid
         self.isadmin = isadmin
+
+    def __str__(self):
+        return f'User {self.name} ID: {self.userid}, Admin: {self.isadmin}'
