@@ -11,26 +11,8 @@ class SqliteRepository:
     def __init__(self):
         self.connection = sqlite3.connect(DATA_LOCATION)
 
-    def get_tests(self):
-        query = '''
-        select * from Tests;
-        '''
-        cursor = self.connection.execute(query)
-        data = cursor.fetchall()
-        print(data)
-
-    def pull(self, test_id):
-        """Достает один тест из базы. Использует всего один SQL-запрос и парсит полученные данные, заполняя словарь.
-         Затем формирует объект класса Test из полученных данных (билдер возможно вынести в отдельный метод
-          самого класса Test, заодно проще будет потом интегрировать модели для вопросов"""
-        query = f'''
-        select t.*, q.title, q.answer, v.body from Tests t
-        inner join main.Questions Q on t.test_id = Q.test_id
-        inner join main.Variants V on Q.question_id = V.question_id
-        where t.test_id = {test_id};
-        '''
-        cursor = self.connection.execute(query)
-        data = cursor.fetchall()
+    @staticmethod
+    def build_test(data):
         test = Test(
             topic=data[0][1],
             timed=False,  # пока всегда False
@@ -47,6 +29,30 @@ class SqliteRepository:
             else:
                 test.questions[-1].answers.append(j[5])
         test.questioncount = len(test.questions)
+        return test
+
+    def get_tests(self):
+        tests = []
+        query = '''
+        select * from Tests;
+        '''
+        cursor = self.connection.execute(query)
+        data = cursor.fetchall()
+        return data
+
+    def pull(self, test_id):
+        """Достает один тест из базы. Использует всего один SQL-запрос и парсит полученные данные, заполняя словарь.
+         Затем формирует объект класса Test из полученных данных (билдер возможно вынести в отдельный метод
+          самого класса Test, заодно проще будет потом интегрировать модели для вопросов"""
+        query = f'''
+        select t.*, q.title, q.answer, v.body from Tests t
+        inner join main.Questions Q on t.test_id = Q.test_id
+        inner join main.Variants V on Q.question_id = V.question_id
+        where t.test_id = {test_id};
+        '''
+        cursor = self.connection.execute(query)
+        data = cursor.fetchall()
+        test = self.build_test(data)
         return test
 
     def get_user(self, username):

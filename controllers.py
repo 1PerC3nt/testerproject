@@ -29,6 +29,11 @@ def show_controller(test_id):
     return item
 
 
+def show_all_controller():
+    tests = repo.get_tests()
+    return tests
+
+
 def score_controller(test_id, guess: list, correct: list, username):
     """Контроллер, отвечающий за подсчет и занесение результатов пройденного теста.
      Пока не поддерживает создание новых пользователей."""

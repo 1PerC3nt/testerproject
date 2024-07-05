@@ -1,5 +1,5 @@
 from models import Test, Question
-from controllers import adder_controller, username_validation, admin_validation, show_controller, score_controller
+from controllers import adder_controller, username_validation, admin_validation, show_controller, score_controller, show_all_controller
 
 
 def show_test(item: Test):
@@ -58,6 +58,7 @@ def user_interface(username):
     while True:
         mode = int(input('Input 1 to choose a test, 2 to add a test(admin), 3 to exit'))
         if mode == 1:
+            print(f'Awaliable tests: {show_all_controller()}')
             testid = input('Enter test ID')
             data = show_test(show_controller(testid))
             print(f'Final score: {score_controller(testid, data[0], data[1], username)}')
