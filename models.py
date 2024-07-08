@@ -1,41 +1,37 @@
 class Test:
-    def __init__(self, topic: str, questioncount: int, timed: bool, scoring: str, diff: str, questions: list,
-                 answers: list, correct: list):
+    def __init__(self, topic: str, timed: bool, scoring: str, diff: str, questions: list):
         self.topic = topic
-        self.questioncount = questioncount
         self.timed = timed
         self.scoring = scoring
         self.diff = diff
         self.questions = questions  # Удалить последние три значения, перенести их в класс Question
-        self.answers = answers
-        self.correct = correct
+        self.questioncount = 0
 
-    def convert_json(self):
-        """Подготоваливает объект класса Test к добавлению в json-файл"""
-        tempdict = dict(topic=self.topic,
-                        questioncount=self.questioncount,
-                        timed=self.timed,
-                        scoring=self.scoring,
-                        diff=self.diff,
-                        questions=self.questions,
-                        answers=self.answers,
-                        correct=self.correct)
-        return tempdict
+    def get_correct(self):
+        result = []
+        for question in self.questions:
+            result.append(question.correct)
+        return result
 
     def __str__(self):
-        return f'''Topic: {self.topic}, Count: {self.questioncount}, {self.timed}, {self.scoring},
-{self.diff}, {self.questions}, {self.answers}, {self.correct}'''
+        return f'''Topic: {self.topic}, Count: {self.questioncount}, Timed: {self.timed}, Scoring: {self.scoring},
+Test diff: {self.diff}, Questions: {self.questions}'''
 
 
 class Question:
     """Заготовка под класс, содержит текст вопроса, список вариантов ответа и номер правильного ответа"""
-    def __init__(self, body: str, answers: list, correct: int):
+    def __init__(self, body: str, answers=None, correct=None):
+        if answers is None:
+            answers = []
         self.body = body
         self.answers = answers
         self.correct = correct
 
     def __repr__(self):
-        return f'Question: {self.body}'
+        return f'Question: {self.body}, answers: {self.answers}'
+
+    def __eq__(self, other):
+        return self.body == other.body
 
 
 class Answer:
@@ -52,3 +48,6 @@ class User:
         self.name = name
         self.userid = userid
         self.isadmin = isadmin
+
+    def __str__(self):
+        return f'User {self.name} ID: {self.userid}, Admin: {self.isadmin}'

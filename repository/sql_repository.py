@@ -1,7 +1,8 @@
-from models import Test
+from models import Test, Question, User
 import sqlite3
+from pathlib import Path
 
-DATA_LOCATION = '..\\storage\\storage.db'
+DATA_LOCATION = Path(__file__) / Path('./storage/storage.db').resolve()
 
 
 class SqliteRepository:
@@ -30,37 +31,77 @@ class SqliteRepository:
         '''
         cursor = self.connection.execute(query)
         data = cursor.fetchall()
-        parsed = {
-            'test_id': data[0][0],
-            'theme': data[0][1],
-            'scoring': data[0][2],
-            'questions': [data[0][3]],
-            'answers': [[]],
-            'correct': [data[0][4]]
-        }
-        temp = 0
-        for i, j in enumerate(data):
-            if j[3] not in parsed['questions']:
-                parsed['questions'].append(j[3])
-                parsed['correct'].append(j[4])
-                parsed['answers'].append([])
-                temp += 1
-            parsed['answers'][temp].append(j[5])
-        testobj = Test(
-            topic=parsed['theme'],
-            questioncount=len(parsed['questions']),
+        test = Test(
+            topic=data[0][1],
             timed=False,  # пока всегда False
-            scoring=parsed['scoring'],
+            scoring=data[0][2],
             diff='Placeholder',  # пока не хранится в БД, возможно лишний параметр
-            questions=parsed['questions'],  # впихнуть куда-то билдер объектов класса Question(возможно @classmethod)
-            answers=parsed['answers'],
-            correct=parsed['correct']
+            questions=[Question(data[0][3], None, data[0][4])],
         )
-        return testobj
+        for j in data:
+            new_question = Question(j[3])
+            if new_question not in test.questions:
+                new_question.correct = j[4]
+                new_question.answers.append(j[5])
+                test.questions.append(new_question)
+            else:
+                test.questions[-1].answers.append(j[5])
+        test.questioncount = len(test.questions)
+        return test
 
-    def adder_sql(self, item: Test, testid):
-        """Добавляет объект класса Test в БД. Скорее всего, нужна транзакция,
-         чтобы гарантировать занесение целостного теста,
-          тк он хранится по разным таблицам и нужно будет сделать несколько операций.
-           Она же заменит старый метод integrity_check, использовавшийся для тех же целей."""
-        pass
+    def get_user(self, username):
+        """Получает данные о пользователе из БД."""
+        query = f'''
+        select * from Users
+        where username =?;
+        '''
+        cursor = self.connection.execute(query, (username,))
+        data = cursor.fetchall()[0]
+        user = User(data[1], data[0], bool(data[2]))
+        return user
+
+    def add_answers(self, question_id: int, answers: list):
+        """Добавляет список ответов в БД."""
+        for answer in answers:
+            query = '''
+            insert into Variants(body, question_id)
+            values(?, ?);
+            '''
+            self.connection.execute(query, [answer, question_id])
+            self.connection.commit()
+
+    def add_questions(self, test_id: int, questions: list):
+        """Добавляет список объектов класса Question в БД."""
+        for question in questions:
+            query = '''
+            insert into Questions(title, answer, test_id)
+            values(?, ?, ?) returning question_id;
+            '''
+            cursor = self.connection.execute(query, [question.body, question.correct, test_id])
+            question_id = cursor.fetchone()
+            self.connection.commit()
+            self.add_answers(question_id[0], question.answers)
+
+    def add_test(self, item: Test):
+        """Добавляет объект класса Test в БД."""
+        try:
+            query = '''
+            insert into Tests(theme, scoringSystem)
+            values(?, ?) returning test_id;
+            '''
+            cursor = self.connection.execute(query, [item.topic, item.scoring])
+            test_id = cursor.fetchone()
+            self.connection.commit()
+            self.add_questions(test_id[0], item.questions)
+        except sqlite3.Error:
+            print('Adder failed')
+            self.connection.rollback()  # Не откатывает изменения в базе при провале транзакции
+
+    def add_result(self, score: int, user_id, test_id):
+        """Добавляет информацию о результатах пройденного теста в БД."""
+        query = '''
+        insert into Results(test_id, user_id, score)
+        values(?, ?, ?);
+        '''
+        self.connection.execute(query, [test_id, user_id, score])
+        self.connection.commit()
